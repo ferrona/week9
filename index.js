@@ -1,5 +1,5 @@
 // standard event listener for Firebase auth... use instead of DOMContentLoaded
-firebase.auth().onAuthStateChanged(async function(user) {
+firebase.auth().onAuthStateChanged(async function (user) {
 
   // check to see if user is logged-in (i.e. user exists)
   if (user) {
@@ -15,7 +15,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
     let signOutButton = document.querySelector(`.sign-out`)
 
     // handle the sign out button click
-    signOutButton.addEventListener(`click`, function(event) {
+    signOutButton.addEventListener(`click`, function (event) {
       // sign out of firebase authentication
       firebase.auth().signOut()
 
@@ -39,7 +39,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
     let postsDiv = document.querySelector(`.posts`)
 
     // Loop through the JSON data, for each Object representing a post:
-    for (let i=0; i < json.length; i++) {
+    for (let i = 0; i < json.length; i++) {
       // Store each object ("post") in memory
       let post = json[i]
 
@@ -50,7 +50,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
       let comments = ``
 
       // Loop through the post's comments
-      for (let i=0; i < post.comments.length; i++) {
+      for (let i = 0; i < post.comments.length; i++) {
         // Create a variable for each comment
         let comment = post.comments[i]
 
@@ -85,25 +85,42 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
       // 🔥 Practice - comments
       // get a reference to the newly created post comment button
+      let commentButton = document.querySelector(`#post-comment-button-${postId}`)
       // event listener for the post comment button
+      commentButton.addEventListener(`click`, async function (event) {
         // ignore the default behavior
+        event.preventDefault()
         // get a reference to the newly created comment input
+        let commentInput = document.querySelector(`#comment-${postId}`)
         // get the body of the comment
+        let commentBody = commentInput.value
         // Build the URL for our posts API
+        let url = `/.netlify/functions/create_comment?postId=${postId}&userName=${user.displayName}&body=${commentBody}`
         // Fetch the url, wait for a response, store the response in memory
+        let response = await fetch(url)
         // refresh the page
+        location.reload()
+      })
 
       // 🔥 Lab - like button
+      let likeButton = document.querySelector(`#like-button-${postId}`)
       // - Create an event listener for the like button of each post
-      // - Create and fetch a "like" lambda function (in /netlify/functions/create_like.js)
-      // - Refresh the page when done fetching the lambda function
+      likeButton.addEventListener(`click`, async function (event) {
+        // ignore the default behavior
+        event.preventDefault()
+        // - Create and fetch a "like" lambda function (in /netlify/functions/create_like.js)
+        let url = `/.netlify/functions/create_like?postId=${postId}&userId=${user.uid}`
+        let response = await fetch(url)
+        // - Refresh the page when done fetching the lambda function
+        location.reload()
+      })
     }
 
     // get a reference to the "Post" button
     let postButton = document.querySelector(`#post-button`)
 
     // handle the clicking of the "Post" button
-    postButton.addEventListener(`click`, async function(event) {
+    postButton.addEventListener(`click`, async function (event) {
       // prevent the default behavior (submitting the form)
       event.preventDefault()
 
